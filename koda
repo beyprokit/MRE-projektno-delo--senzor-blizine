@@ -1,0 +1,50 @@
+koda:
+#include <LiquidCrystal.h>
+
+int signal = 0;
+int LED = 9; // Pin for the LED
+int signal2 = 0;
+unsigned long startTime = 0;
+const unsigned long delayTime = 10000; // Delay time in milliseconds
+
+LiquidCrystal lcd(11, 2, 4, 5, 6, 7);
+
+void setup() {
+
+  lcd.begin(8, 2);
+  
+  pinMode(LED, OUTPUT); // Set LED pin as output
+}
+
+void loop() {
+  signal = digitalRead(8);
+  signal2 = digitalRead(10);
+
+  if (signal2 == HIGH) {
+    lcd.print("POWER DOWN");
+    digitalWrite(LED, LOW); // Turn off the LED
+  } else {
+    if (signal == HIGH) {
+      lcd.setCursor(1, 0);
+      lcd.print("ON");
+      digitalWrite(LED, HIGH); // Turn on the LED
+      startTime = millis(); // Record the start time
+      while (millis() - startTime < delayTime) {
+        lcd.setCursor(1, 1);
+        unsigned long remainingTime = delayTime - (millis() - startTime);
+        lcd.print("Time Left: ");
+        lcd.print(remainingTime / 1000);
+        lcd.print("s ");
+      }
+      digitalWrite(LED, LOW); // Turn off the LED
+    } else {
+      lcd.setCursor(1, 0);
+      lcd.print("OFF");
+      lcd.setCursor(1, 1);
+      lcd.print("             "); // Clear the timer display
+    }
+  }
+  
+  delay(500);
+  lcd.clear();
+}
